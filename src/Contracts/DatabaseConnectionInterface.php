@@ -4,6 +4,6 @@ namespace App\Contracts;
 
 interface DatabaseConnectionInterface
 {
-    public function connection();
+    public function connect();
     public function getConnection();
 }

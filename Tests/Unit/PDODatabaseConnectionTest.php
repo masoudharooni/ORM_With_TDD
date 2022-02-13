@@ -6,6 +6,7 @@ use App\Helpers\Config;
 use PHPUnit\Framework\TestCase;
 use App\Database\PDODatabaseConnection;
 use App\Contracts\DatabaseConnectionInterface;
+use PDO;
 
 class PDODatabaseConnectionTest extends TestCase
 {
@@ -16,7 +17,15 @@ class PDODatabaseConnectionTest extends TestCase
     public function testItInstansOfDatabaseConnectionInterface()
     {
         $config = $this->getConfigs();
-        $PDODatabaseConnection = new PDODatabaseConnection($config);
-        $this->assertInstanceOf(DatabaseConnectionInterface::class, $PDODatabaseConnection);
+        $pdoConnection = new PDODatabaseConnection($config);
+        $this->assertInstanceOf(DatabaseConnectionInterface::class, $pdoConnection);
+    }
+
+    public function testConnetionMethodThatInstanceOfPDO()
+    {
+        $config = $this->getConfigs();
+        $pdoConnection = new PDODatabaseConnection($config);
+        $pdoConnection->connect();
+        $this->assertInstanceOf(PDO::class, $pdoConnection->getConnection());
     }
 }

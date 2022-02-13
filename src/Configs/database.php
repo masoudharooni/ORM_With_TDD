@@ -2,7 +2,7 @@
 
 return [
     'pdo' => [
-        'database' => 'mysql',
+        'driver'   => 'mysql',
         'username' => 'root',
         'password' => '',
         'dbname'   => 'orm',
@@ -10,7 +10,7 @@ return [
         'host'     => 'localhost'
     ],
     'pdo_testing' => [
-        'database' => 'mysql',
+        'driver'   => 'mysql',
         'username' => 'root',
         'password' => '',
         'dbname'   => 'orm_testing',

@@ -24,7 +24,7 @@ class ConfigTest extends TestCase
     {
         $config = Config::get('database', 'pdo');
         $expectedArray = [
-            'database' => 'mysql',
+            'driver' => 'mysql',
             'username' => 'root',
             'password' => '',
             'dbname'   => 'orm',
