@@ -19,4 +19,14 @@ class Database
         $columns = implode(',', $arrayKeys);
         return $columns;
     }
+
+    public static function updateColumnsForSqlStatement(array $data): string
+    {
+        $columnsAndValue = [];
+        foreach ($data as $key => $value) {
+            $columnsAndValue[] = "{$key} = ?";
+        }
+        $setSection = implode(',', $columnsAndValue);
+        return $setSection;
+    }
 }
