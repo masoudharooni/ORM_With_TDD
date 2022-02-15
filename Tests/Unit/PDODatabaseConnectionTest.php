@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 use App\Database\PDODatabaseConnection;
 use App\Contracts\DatabaseConnectionInterface;
 use App\Exceptions\DatabaseConnectionException;
+use App\Exceptions\dataBaseConfigKeysException;
 use PDO;
 
 class PDODatabaseConnectionTest extends TestCase
@@ -45,5 +46,13 @@ class PDODatabaseConnectionTest extends TestCase
         $config['dbname'] = 'dummy';
         $pdoConnection = new PDODatabaseConnection($config);
         $pdoConnection->connect();
+    }
+
+    public function testItThrowsExceptionWhenConfigKeysAreNotValid()
+    {
+        $this->expectException(dataBaseConfigKeysException::class);
+        $config = $this->getConfigs();
+        unset($config['username']);
+        new PDODatabaseConnection($config);
     }
 }

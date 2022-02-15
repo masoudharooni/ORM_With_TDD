@@ -6,6 +6,8 @@ use App\Contracts\DatabaseConnectionInterface;
 use PDO;
 use PDOException;
 use App\Exceptions\DatabaseConnectionException;
+use App\Exceptions\dataBaseConfigKeysException;
+use App\Helpers\Config;
 
 class PDODatabaseConnection implements DatabaseConnectionInterface
 {
@@ -13,6 +15,8 @@ class PDODatabaseConnection implements DatabaseConnectionInterface
     private $connection;
     public function __construct(array $config)
     {
+        if (!Config::areValidConfigKeys($config))
+            throw new dataBaseConfigKeysException("Config keys are not valid!");
         $this->config = $config;
     }
 
