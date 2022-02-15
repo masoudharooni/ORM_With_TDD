@@ -3,6 +3,7 @@
 namespace App\Database;
 
 use App\Contracts\DatabaseConnectionInterface;
+use App\Helpers\Database;
 
 class PdoQueryBuilder
 {
@@ -20,12 +21,8 @@ class PdoQueryBuilder
 
     public function create(array $data): int
     {
-        $arrayKeys = array_keys($data);
-        $columns = implode(',', $arrayKeys);
-        $questionSignArray = [];
-        foreach ($data as $value)
-            $questionSignArray[] = '?';
-        $placeholder = implode(',', $questionSignArray);
+        $columns = Database::createColumnsListForSqlStatement($data);
+        $placeholder = Database::createPlaceholderForSqlStatement($data);
         $sql = "INSERT INTO {$this->table} ({$columns}) VALUES ({$placeholder})";
         $stmt = $this->connection->prepare($sql);
         $stmt->execute(array_values($data));
