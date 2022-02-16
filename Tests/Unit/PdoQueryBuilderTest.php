@@ -6,6 +6,7 @@ use App\Database\PDODatabaseConnection;
 use PHPUnit\Framework\TestCase;
 use App\Database\PdoQueryBuilder;
 use App\Helpers\Config;
+use App\Exceptions\ColumnDatabaseNotExistException;
 
 class PdoQueryBuilderTest extends TestCase
 {
@@ -40,6 +41,21 @@ class PdoQueryBuilderTest extends TestCase
         $this->assertIsBool($result);
     }
 
+    public function testItShouldTrowsExceptionWhenColumnsNotExist()
+    {
+        $this->expectException(ColumnDatabaseNotExistException::class);
+        $config = $this->getConfigs();
+        $dbInstance = new PDODatabaseConnection($config);
+        $queryBuilder = new PdoQueryBuilder($dbInstance->connect());
+        $data = [
+            'name' => "First bug after update",
+            'link' => "http://link.comAfterUpdate",
+            'user' => "Masoud Haroon Updated",
+            'email' => "masoudharooni50@gmail.comUUUUUUUPdated",
+        ];
+        $result = $queryBuilder->table('bugs')->where('dummy', 'Masoud Harooni')->update($data);
+        $this->assertIsBool($result);
+    }
     private function getConfigs()
     {
         return Config::get('database', 'pdo_testing');

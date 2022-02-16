@@ -2,8 +2,16 @@
 
 namespace App\Helpers;
 
+use Prophecy\Argument\Token\InArrayToken;
+
 class Database
 {
+    const VALID_COLUMNS = [
+        'user',
+        'name',
+        'link',
+        'email'
+    ];
     public static function createPlaceholderForSqlStatement(array $data): string
     {
         $questionSignArray = [];
@@ -28,5 +36,10 @@ class Database
         }
         $setSection = implode(',', $columnsAndValue);
         return $setSection;
+    }
+
+    public static function isValidColumnForWhereStatement(string $column): bool
+    {
+        return (in_array($column, self::VALID_COLUMNS));
     }
 }

@@ -4,6 +4,7 @@ namespace App\Database;
 
 use App\Contracts\DatabaseConnectionInterface;
 use App\Helpers\Database;
+use App\Exceptions\ColumnDatabaseNotExistException;
 
 class PdoQueryBuilder
 {
@@ -32,6 +33,8 @@ class PdoQueryBuilder
 
     public function where(string $column, $value)
     {
+        if (!Database::isValidColumnForWhereStatement($column))
+            throw new ColumnDatabaseNotExistException("Column is not exist!");
         $this->whereSqlStatementCondition[] = "{$column} = '{$value}'";
         return $this;
     }
@@ -41,7 +44,6 @@ class PdoQueryBuilder
         $setSection = Database::updateColumnsForSqlStatement($data);
         $where = implode(' AND ', $this->whereSqlStatementCondition);
         $sql = "UPDATE {$this->table} SET {$setSection} WHERE {$where}";
-        // var_dump($sql);
         $stmt = $this->connection->prepare($sql);
         return $stmt->execute(array_values($data));
     }
