@@ -39,21 +39,15 @@ class PdoQueryBuilderTest extends TestCase
         ];
         $result = $queryBuilder->table('bugs')->where('user', 'Masoud Harooni')->update($data);
         $this->assertIsBool($result);
+        return $queryBuilder;
     }
-
-    public function testItShouldTrowsExceptionWhenColumnsNotExist()
+    /**
+     * @depends testItCanUpdateData
+     */
+    public function testItShouldTrowsExceptionWhenColumnsNotExist($queryBuilder)
     {
         $this->expectException(ColumnDatabaseNotExistException::class);
-        $config = $this->getConfigs();
-        $dbInstance = new PDODatabaseConnection($config);
-        $queryBuilder = new PdoQueryBuilder($dbInstance->connect());
-        $data = [
-            'name' => "First bug after update",
-            'link' => "http://link.comAfterUpdate",
-            'user' => "Masoud Haroon Updated",
-            'email' => "masoudharooni50@gmail.comUUUUUUUPdated",
-        ];
-        $result = $queryBuilder->table('bugs')->where('dummy', 'Masoud Harooni')->update($data);
+        $result = $queryBuilder->table('bugs')->where('dummy', 'Masoud Harooni');
         $this->assertIsBool($result);
     }
     private function getConfigs()
