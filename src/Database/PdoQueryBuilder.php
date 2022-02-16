@@ -9,6 +9,7 @@ class PdoQueryBuilder
 {
     private $table;
     private $connection;
+    private $whereSqlStatementCondition = [];
     public function __construct(DatabaseConnectionInterface $connection)
     {
         $this->connection = $connection->getConnection();
@@ -29,12 +30,19 @@ class PdoQueryBuilder
         return (int)$this->connection->lastInsertId();
     }
 
-    public function update(array $data, int $column_id): bool
+    public function where(string $column, $value)
+    {
+        $this->whereSqlStatementCondition[] = "{$column} = '{$value}'";
+        return $this;
+    }
+
+    public function update(array $data): bool
     {
         $setSection = Database::updateColumnsForSqlStatement($data);
-        $sql = "UPDATE {$this->table} SET {$setSection} WHERE id = ?";
+        $where = implode(' AND ', $this->whereSqlStatementCondition);
+        $sql = "UPDATE {$this->table} SET {$setSection} WHERE {$where}";
+        // var_dump($sql);
         $stmt = $this->connection->prepare($sql);
-        array_push($data, $column_id);
         return $stmt->execute(array_values($data));
     }
 }

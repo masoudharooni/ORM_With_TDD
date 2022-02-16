@@ -31,13 +31,12 @@ class PdoQueryBuilderTest extends TestCase
         $dbInstance = new PDODatabaseConnection($config);
         $queryBuilder = new PdoQueryBuilder($dbInstance->connect());
         $data = [
-            'name' => "First bug report222",
-            'link' => "http://link.com2222",
-            'user' => "Masoud Harooni22222",
-            'email' => "masoudharooni50@gmail.com2222",
+            'name' => "First bug after update",
+            'link' => "http://link.comAfterUpdate",
+            'user' => "Masoud Haroon Updated",
+            'email' => "masoudharooni50@gmail.comUUUUUUUPdated",
         ];
-        $column_id = 23;
-        $result = $queryBuilder->table('bugs')->update($data, $column_id);
+        $result = $queryBuilder->table('bugs')->where('user', 'Masoud Harooni')->update($data);
         $this->assertIsBool($result);
     }
 
