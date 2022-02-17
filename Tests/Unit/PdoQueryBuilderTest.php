@@ -18,7 +18,6 @@ class PdoQueryBuilderTest extends TestCase
         $dbInstance = new PDODatabaseConnection($config);
         $this->queryBuilder = new PdoQueryBuilder($dbInstance->connect());
         $this->queryBuilder->beginTransaction();
-        $this->insertIntoDb();
         parent::setUp();
     }
 
@@ -31,6 +30,7 @@ class PdoQueryBuilderTest extends TestCase
 
     public function testItCanUpdateData()
     {
+        $this->insertIntoDb();
         $data = [
             'name' => "First bug after update",
             'link' => "http://link.comAfterUpdate",
@@ -38,9 +38,23 @@ class PdoQueryBuilderTest extends TestCase
             'email' => "masoudharooni50@gmail.comUUUUUUUPdated",
         ];
         $result = $this->queryBuilder->table('bugs')->where('user', 'Masoud Harooni')->update($data);
-        $this->assertIsBool($result);
+        $this->assertEquals(1, $result);
         return $this->queryBuilder;
     }
+
+    public function testMultipleWhere()
+    {
+        $this->insertIntoDb();
+        $this->insertIntoDb(['user' => 'Ali Harooni', 'link' => 'forExample.com']);
+        $result = $this->queryBuilder
+            ->table('bugs')
+            ->where('user', 'Ali Harooni')
+            ->where('link', 'forExample.com')
+            ->update(['user' => 'hello this is user']);
+        $this->assertEquals(1, $result);
+    }
+
+
     /**
      * @depends testItCanUpdateData
      */
@@ -64,11 +78,12 @@ class PdoQueryBuilderTest extends TestCase
 
     public function testItCanDeleteRecord()
     {
+        $this->insertIntoDb();
         $result = $this->queryBuilder
             ->table('bugs')
-            ->where('user', 'Masoud Harooni22222')
+            ->where('user', 'Masoud Harooni')
             ->delete();
-        $this->assertTrue($result);
+        $this->assertEquals(1, $result);
     }
 
     public function tearDown(): void
@@ -78,14 +93,14 @@ class PdoQueryBuilderTest extends TestCase
         parent::tearDown();
     }
 
-    public function insertIntoDb()
+    public function insertIntoDb(array $option = [])
     {
-        $data = [
+        $data = array_merge([
             'name' => "First bug report",
             'link' => "http://link.com",
             'user' => "Masoud Harooni",
             'email' => "masoudharooni50@gmail.com",
-        ];
+        ], $option);
         $result = $this->queryBuilder->table('bugs')->create($data);
         return $result;
     }

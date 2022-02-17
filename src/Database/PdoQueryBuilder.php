@@ -43,13 +43,14 @@ class PdoQueryBuilder
         return $this;
     }
 
-    public function update(array $data): bool
+    public function update(array $data): int
     {
         $setSection = Database::updateColumnsForSqlStatement($data);
         $where = implode(' AND ', $this->whereSqlStatementCondition);
         $sql = "UPDATE {$this->table} SET {$setSection} WHERE {$where}";
         $stmt = $this->connection->prepare($sql);
-        return $stmt->execute(array_values($data));
+        $stmt->execute(array_values($data));
+        return $stmt->rowCount();
     }
 
     private function isExistTable(string $table_name)
@@ -58,12 +59,13 @@ class PdoQueryBuilder
         return (in_array($table_name, $tables));
     }
 
-    public function delete(): bool
+    public function delete(): int
     {
         $where = implode(' AND ', $this->whereSqlStatementCondition);
         $sql = "DELETE FROM {$this->table} WHERE {$where};";
         $stmt = $this->connection->prepare($sql);
-        return $stmt->execute();
+        $stmt->execute();
+        return $stmt->rowCount();
     }
     private function getAllTables()
     {
