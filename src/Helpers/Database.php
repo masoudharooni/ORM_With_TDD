@@ -36,7 +36,7 @@ class Database
         return $setSection;
     }
 
-    public static function isValidColumnForWhereStatement(string $column): bool
+    public static function isValidColumn(string $column): bool
     {
         return (in_array($column, self::VALID_COLUMNS));
     }

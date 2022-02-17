@@ -6,6 +6,7 @@ use App\Contracts\DatabaseConnectionInterface;
 use App\Helpers\Database;
 use App\Exceptions\ColumnDatabaseNotExistException;
 use App\Exceptions\TableNotExistException;
+use App\Exceptions\FieldIsNotExistException;
 use PDO;
 
 class PdoQueryBuilder
@@ -13,6 +14,7 @@ class PdoQueryBuilder
     private $table;
     private $connection;
     private $whereSqlStatementCondition = [];
+    private $fieldsForGetMethod = [];
     public function __construct(DatabaseConnectionInterface $connection)
     {
         $this->connection = $connection->getConnection();
@@ -37,7 +39,7 @@ class PdoQueryBuilder
 
     public function where(string $column, $value)
     {
-        if (!Database::isValidColumnForWhereStatement($column))
+        if (!Database::isValidColumn($column))
             throw new ColumnDatabaseNotExistException("Column is not exist!");
         $this->whereSqlStatementCondition[] = "{$column} = '{$value}'";
         return $this;
@@ -72,11 +74,22 @@ class PdoQueryBuilder
     {
         $where = !count($this->whereSqlStatementCondition) ? null
             : " WHERE " . implode(' AND ', $this->whereSqlStatementCondition);
-        $sql = "SELECT * FROM {$this->table} {$where}";
+        $fields = !count($this->fieldsForGetMethod) ? "*"
+            : implode(',', $this->fieldsForGetMethod);
+        $sql = "SELECT {$fields} FROM {$this->table} {$where}";
         $stmt = $this->connection->prepare($sql);
         $stmt->execute();
         $result = $stmt->fetchAll();
         return (count($result) > 0 ? $result : null);
+    }
+
+    public function field(array $fields = [])
+    {
+        foreach ($fields as $field)
+            if (!Database::isValidColumn($field))
+                throw new FieldIsNotExistException("Field is not exist!");
+        $this->fieldsForGetMethod = $fields;
+        return $this;
     }
 
     private function getAllTables()

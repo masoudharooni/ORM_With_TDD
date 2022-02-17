@@ -8,6 +8,7 @@ use App\Database\PdoQueryBuilder;
 use App\Helpers\Config;
 use App\Exceptions\ColumnDatabaseNotExistException;
 use App\Exceptions\TableNotExistException;
+use App\Exceptions\FieldIsNotExistException;
 
 class PdoQueryBuilderTest extends TestCase
 {
@@ -116,6 +117,27 @@ class PdoQueryBuilderTest extends TestCase
             ->where('user', 'dummy')
             ->get();
         $this->assertNull($result);
+    }
+
+    public function testGettingSpecialColumnWithGetMethod()
+    {
+        $this->multipleInsertIntoDb(10, ['user' => 'Ali']);
+        $this->multipleInsertIntoDb(10);
+        $result = $this->queryBuilder
+            ->table('bugs')
+            ->where('user', 'Ali')
+            ->field(['user'])
+            ->get();
+        $this->assertIsArray($result);
+        $this->assertCount(10, $result);
+    }
+
+    public function testItShouldThrowsExceptionWhenFieldsAreNotValid()
+    {
+        $this->expectException(FieldIsNotExistException::class);
+        $this->queryBuilder
+            ->table('bugs')
+            ->field(['dummy field']);
     }
 
     public function tearDown(): void
