@@ -17,18 +17,13 @@ class PdoQueryBuilderTest extends TestCase
         $config = $this->getConfigs();
         $dbInstance = new PDODatabaseConnection($config);
         $this->queryBuilder = new PdoQueryBuilder($dbInstance->connect());
+        $this->insertIntoDb();
         parent::setUp();
     }
 
     public function testItCanCreateData()
     {
-        $data = [
-            'name' => "First bug report",
-            'link' => "http://link.com",
-            'user' => "Masoud Harooni",
-            'email' => "masoudharooni50@gmail.com",
-        ];
-        $result = $this->queryBuilder->table('bugs')->create($data);
+        $result = $this->insertIntoDb();
         $this->assertIsInt($result);
         $this->assertGreaterThan(0, $result);
     }
@@ -66,7 +61,7 @@ class PdoQueryBuilderTest extends TestCase
         $this->queryBuilder->table('dummy');
     }
 
-    public function testCanDeleteData()
+    public function testItCanDeleteRecord()
     {
         $result = $this->queryBuilder
             ->table('bugs')
@@ -74,6 +69,25 @@ class PdoQueryBuilderTest extends TestCase
             ->delete();
         $this->assertTrue($result);
     }
+
+    public function tearDown(): void
+    {
+        $this->queryBuilder->truncateAllTables();
+        parent::tearDown();
+    }
+
+    public function insertIntoDb()
+    {
+        $data = [
+            'name' => "First bug report",
+            'link' => "http://link.com",
+            'user' => "Masoud Harooni",
+            'email' => "masoudharooni50@gmail.com",
+        ];
+        $result = $this->queryBuilder->table('bugs')->create($data);
+        return $result;
+    }
+
     private function getConfigs()
     {
         return Config::get('database', 'pdo_testing');

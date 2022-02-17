@@ -72,4 +72,13 @@ class PdoQueryBuilder
         $tables = $query->fetchAll(PDO::FETCH_COLUMN);
         return $tables;
     }
+
+    public function truncateAllTables()
+    {
+        $tables = $this->getAllTables();
+        foreach ($tables as $table) {
+            $query = $this->connection->prepare("TRUNCATE TABLE {$table}");
+            $query->execute();
+        }
+    }
 }
