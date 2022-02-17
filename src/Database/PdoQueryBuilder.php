@@ -75,7 +75,8 @@ class PdoQueryBuilder
         $sql = "SELECT * FROM {$this->table} {$where}";
         $stmt = $this->connection->prepare($sql);
         $stmt->execute();
-        return $stmt->fetchAll();
+        $result = $stmt->fetchAll();
+        return (count($result) > 0 ? $result : null);
     }
 
     private function getAllTables()

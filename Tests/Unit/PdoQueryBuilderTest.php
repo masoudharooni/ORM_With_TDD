@@ -109,6 +109,15 @@ class PdoQueryBuilderTest extends TestCase
         $this->assertCount((10 + 10), $result);
     }
 
+    public function testItCanReturnNullWhenAreNotExistAnyData()
+    {
+        $result = $this->queryBuilder
+            ->table('bugs')
+            ->where('user', 'dummy')
+            ->get();
+        $this->assertNull($result);
+    }
+
     public function tearDown(): void
     {
         // $this->queryBuilder->truncateAllTables();
