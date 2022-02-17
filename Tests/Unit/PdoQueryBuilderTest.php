@@ -17,6 +17,7 @@ class PdoQueryBuilderTest extends TestCase
         $config = $this->getConfigs();
         $dbInstance = new PDODatabaseConnection($config);
         $this->queryBuilder = new PdoQueryBuilder($dbInstance->connect());
+        $this->queryBuilder->beginTransaction();
         $this->insertIntoDb();
         parent::setUp();
     }
@@ -72,7 +73,8 @@ class PdoQueryBuilderTest extends TestCase
 
     public function tearDown(): void
     {
-        $this->queryBuilder->truncateAllTables();
+        // $this->queryBuilder->truncateAllTables();
+        $this->queryBuilder->rollback();
         parent::tearDown();
     }
 

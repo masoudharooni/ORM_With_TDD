@@ -81,4 +81,13 @@ class PdoQueryBuilder
             $query->execute();
         }
     }
+
+    public function beginTransaction()
+    {
+        $this->connection->beginTransaction();
+    }
+    public function rollback()
+    {
+        $this->connection->rollback();
+    }
 }
