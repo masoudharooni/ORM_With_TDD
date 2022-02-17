@@ -15,6 +15,7 @@ class PdoQueryBuilder
     private $connection;
     private $whereSqlStatementCondition = [];
     private $fieldsForGetMethod = [];
+    private $paginationParams = [];
     public function __construct(DatabaseConnectionInterface $connection)
     {
         $this->connection = $connection->getConnection();
@@ -76,7 +77,9 @@ class PdoQueryBuilder
             : " WHERE " . implode(' AND ', $this->whereSqlStatementCondition);
         $fields = !count($this->fieldsForGetMethod) ? "*"
             : implode(',', $this->fieldsForGetMethod);
-        $sql = "SELECT {$fields} FROM {$this->table} {$where}";
+        $pagination = !count($this->paginationParams) ? null
+            : " LIMIT " . implode(',', $this->paginationParams);
+        $sql = "SELECT {$fields} FROM {$this->table} {$where} {$pagination}";
         $stmt = $this->connection->prepare($sql);
         $stmt->execute();
         $result = $stmt->fetchAll();
@@ -89,6 +92,15 @@ class PdoQueryBuilder
             if (!Database::isValidColumn($field))
                 throw new FieldIsNotExistException("Field is not exist!");
         $this->fieldsForGetMethod = $fields;
+        return $this;
+    }
+
+    public function pagination(int $page = null, int  $page_size = null)
+    {
+        if (!is_null($page) and !is_null($page_size)) {
+            $startPoint = ($page - 1) * $page_size;
+            $this->paginationParams = ['start_point' => $startPoint, 'page_size' => $page_size];
+        }
         return $this;
     }
 

@@ -140,6 +140,17 @@ class PdoQueryBuilderTest extends TestCase
             ->field(['dummy field']);
     }
 
+    public function testItCanFetchDataWithPagination()
+    {
+        $this->multipleInsertIntoDb(10);
+        $result = $this->queryBuilder
+            ->table('bugs')
+            ->pagination(2, 3)
+            ->get();
+        $this->assertIsArray($result);
+        $this->assertCount(3, $result);
+    }
+
     public function tearDown(): void
     {
         // $this->queryBuilder->truncateAllTables();
