@@ -6,6 +6,7 @@ use App\Contracts\DatabaseConnectionInterface;
 use App\Helpers\Database;
 use App\Exceptions\ColumnDatabaseNotExistException;
 use App\Exceptions\TableNotExistException;
+use PDO;
 
 class PdoQueryBuilder
 {
@@ -18,7 +19,7 @@ class PdoQueryBuilder
     }
     public function table(string $table_name)
     {
-        if (!Database::isExistTable($table_name))
+        if (!$this->isExistTable($table_name))
             throw new TableNotExistException("Table Not Exist!");
         $this->table = $table_name;
         return $this;
@@ -49,5 +50,18 @@ class PdoQueryBuilder
         $sql = "UPDATE {$this->table} SET {$setSection} WHERE {$where}";
         $stmt = $this->connection->prepare($sql);
         return $stmt->execute(array_values($data));
+    }
+
+    private function isExistTable(string $table_name)
+    {
+        $tables = $this->getAllTables();
+        return (in_array($table_name, $tables));
+    }
+    private function getAllTables()
+    {
+        $query = $this->connection->prepare("SHOW TABLES");
+        $query->execute();
+        $tables = $query->fetchAll(PDO::FETCH_COLUMN);
+        return $tables;
     }
 }

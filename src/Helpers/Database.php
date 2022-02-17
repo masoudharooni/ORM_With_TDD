@@ -2,8 +2,6 @@
 
 namespace App\Helpers;
 
-use Prophecy\Argument\Token\InArrayToken;
-
 class Database
 {
     const VALID_COLUMNS = [
@@ -11,9 +9,6 @@ class Database
         'name',
         'link',
         'email'
-    ];
-    const VALID_TABLES = [
-        'bugs'
     ];
     public static function createPlaceholderForSqlStatement(array $data): string
     {
@@ -44,10 +39,5 @@ class Database
     public static function isValidColumnForWhereStatement(string $column): bool
     {
         return (in_array($column, self::VALID_COLUMNS));
-    }
-
-    public static function isExistTable(string $table_name): bool
-    {
-        return (in_array($table_name, self::VALID_TABLES));
     }
 }
