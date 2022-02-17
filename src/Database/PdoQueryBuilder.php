@@ -67,6 +67,16 @@ class PdoQueryBuilder
         $stmt->execute();
         return $stmt->rowCount();
     }
+
+    public function get(): ?array
+    {
+        $where = implode(' AND ', $this->whereSqlStatementCondition);
+        $sql = "SELECT * FROM {$this->table} WHERE {$where}";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
     private function getAllTables()
     {
         $query = $this->connection->prepare("SHOW TABLES");

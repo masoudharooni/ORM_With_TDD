@@ -86,6 +86,19 @@ class PdoQueryBuilderTest extends TestCase
         $this->assertEquals(1, $result);
     }
 
+    public function testItCanFetchData()
+    {
+        $this->multipleInsertIntoDb(10, ['user' => 'Ali']);
+        $this->multipleInsertIntoDb(10);
+        $result = $this->queryBuilder
+            ->table('bugs')
+            ->where('user', 'Ali')
+            ->get();
+        $this->assertIsArray($result);
+        $this->assertCount(10, $result);
+    }
+
+
     public function tearDown(): void
     {
         // $this->queryBuilder->truncateAllTables();
@@ -93,7 +106,7 @@ class PdoQueryBuilderTest extends TestCase
         parent::tearDown();
     }
 
-    public function insertIntoDb(array $option = [])
+    private function insertIntoDb(array $option = [])
     {
         $data = array_merge([
             'name' => "First bug report",
@@ -103,6 +116,12 @@ class PdoQueryBuilderTest extends TestCase
         ], $option);
         $result = $this->queryBuilder->table('bugs')->create($data);
         return $result;
+    }
+
+    private function multipleInsertIntoDb(int $count, array $option = [])
+    {
+        for ($i = 0; $i < $count; $i++)
+            $this->insertIntoDb($option);
     }
 
     private function getConfigs()
