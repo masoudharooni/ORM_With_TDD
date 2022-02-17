@@ -98,6 +98,16 @@ class PdoQueryBuilderTest extends TestCase
         $this->assertCount(10, $result);
     }
 
+    public function testItCanFetchDataWithoutWhere()
+    {
+        $this->multipleInsertIntoDb(10, ['user' => 'Ali']);
+        $this->multipleInsertIntoDb(10);
+        $result = $this->queryBuilder
+            ->table('bugs')
+            ->get();
+        $this->assertIsArray($result);
+        $this->assertCount((10 + 10), $result);
+    }
 
     public function tearDown(): void
     {

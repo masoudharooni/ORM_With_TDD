@@ -70,8 +70,9 @@ class PdoQueryBuilder
 
     public function get(): ?array
     {
-        $where = implode(' AND ', $this->whereSqlStatementCondition);
-        $sql = "SELECT * FROM {$this->table} WHERE {$where}";
+        $where = !count($this->whereSqlStatementCondition) ? null
+            : " WHERE " . implode(' AND ', $this->whereSqlStatementCondition);
+        $sql = "SELECT * FROM {$this->table} {$where}";
         $stmt = $this->connection->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll();
