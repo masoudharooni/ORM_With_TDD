@@ -57,6 +57,14 @@ class PdoQueryBuilder
         $tables = $this->getAllTables();
         return (in_array($table_name, $tables));
     }
+
+    public function delete(): bool
+    {
+        $where = implode(' AND ', $this->whereSqlStatementCondition);
+        $sql = "DELETE FROM {$this->table} WHERE {$where};";
+        $stmt = $this->connection->prepare($sql);
+        return $stmt->execute();
+    }
     private function getAllTables()
     {
         $query = $this->connection->prepare("SHOW TABLES");

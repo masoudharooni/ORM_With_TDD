@@ -66,6 +66,14 @@ class PdoQueryBuilderTest extends TestCase
         $this->queryBuilder->table('dummy');
     }
 
+    public function testCanDeleteData()
+    {
+        $result = $this->queryBuilder
+            ->table('bugs')
+            ->where('user', 'Masoud Harooni22222')
+            ->delete();
+        $this->assertTrue($result);
+    }
     private function getConfigs()
     {
         return Config::get('database', 'pdo_testing');
