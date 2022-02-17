@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 use App\Database\PdoQueryBuilder;
 use App\Helpers\Config;
 use App\Exceptions\ColumnDatabaseNotExistException;
+use App\Exceptions\TableNotExistException;
 
 class PdoQueryBuilderTest extends TestCase
 {
@@ -52,6 +53,19 @@ class PdoQueryBuilderTest extends TestCase
         $this->expectException(ColumnDatabaseNotExistException::class);
         $queryBuilder->table('bugs')->where('dummy', 'Masoud Harooni');
     }
+
+    public function testTableMethodShouldReturnAnInstanceOfPdoQueryBuilderClass()
+    {
+        $result = $this->queryBuilder->table('bugs');
+        $this->assertInstanceOf(PdoQueryBuilder::class, $result);
+    }
+
+    public function testTableMethodShouldThrowsExceptionWhenTableIsNotValid()
+    {
+        $this->expectException(TableNotExistException::class);
+        $this->queryBuilder->table('dummy');
+    }
+
     private function getConfigs()
     {
         return Config::get('database', 'pdo_testing');

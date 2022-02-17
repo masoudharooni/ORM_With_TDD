@@ -5,6 +5,7 @@ namespace App\Database;
 use App\Contracts\DatabaseConnectionInterface;
 use App\Helpers\Database;
 use App\Exceptions\ColumnDatabaseNotExistException;
+use App\Exceptions\TableNotExistException;
 
 class PdoQueryBuilder
 {
@@ -17,6 +18,8 @@ class PdoQueryBuilder
     }
     public function table(string $table_name)
     {
+        if (!Database::isExistTable($table_name))
+            throw new TableNotExistException("Table Not Exist!");
         $this->table = $table_name;
         return $this;
     }
