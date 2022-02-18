@@ -135,6 +135,19 @@ class PdoQueryBuilderTest extends TestCase
         $this->assertEquals(['user', 'link'], array_keys($objectToArray[0]));
     }
 
+    public function testItCatFetchFirstRow()
+    {
+        $this->multipleInsertIntoDb(10);
+        $result = $this->queryBuilder
+            ->table('bugs')
+            ->first();
+        $this->assertIsObject($result);
+        $this->assertObjectHasAttribute('user', $result);
+        $this->assertObjectHasAttribute('link', $result);
+        $this->assertObjectHasAttribute('name', $result);
+        $this->assertObjectHasAttribute('email', $result);
+    }
+
     public function testItShouldThrowsExceptionWhenFieldsAreNotValid()
     {
         $this->expectException(FieldIsNotExistException::class);

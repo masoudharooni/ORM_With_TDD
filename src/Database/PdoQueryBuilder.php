@@ -86,6 +86,12 @@ class PdoQueryBuilder
         return (count($result) > 0 ? $result : null);
     }
 
+    public function first()
+    {
+        $result = $this->get();
+        return $result[0];
+    }
+
     public function field(array $fields = [])
     {
         foreach ($fields as $field)
