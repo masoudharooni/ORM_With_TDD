@@ -39,9 +39,22 @@ class PdoQueryBuilderTest extends TestCase
             'user' => "Masoud Haroon Updated",
             'email' => "masoudharooni50@gmail.comUUUUUUUPdated",
         ];
-        $result = $this->queryBuilder->table('bugs')->where('user', 'Masoud Harooni')->update($data);
+        $result = $this->queryBuilder
+            ->table('bugs')
+            ->where('user', 'Masoud Harooni')
+            ->update($data);
         $this->assertEquals(1, $result);
         return $this->queryBuilder;
+    }
+
+    public function testItShouldReturnZeroWhenTheRowIsNotExist()
+    {
+        $this->insertIntoDb();
+        $result = $this->queryBuilder
+            ->table('bugs')
+            ->where('user', 'Dummy user')
+            ->update(['name' => 'after Update']);
+        $this->assertEquals(0, $result);
     }
 
     public function testMultipleWhere()
