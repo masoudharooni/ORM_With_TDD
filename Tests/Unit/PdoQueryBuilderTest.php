@@ -9,6 +9,7 @@ use App\Helpers\Config;
 use App\Exceptions\ColumnDatabaseNotExistException;
 use App\Exceptions\TableNotExistException;
 use App\Exceptions\FieldIsNotExistException;
+use phpDocumentor\Reflection\Types\ArrayKey;
 
 class PdoQueryBuilderTest extends TestCase
 {
@@ -121,15 +122,17 @@ class PdoQueryBuilderTest extends TestCase
 
     public function testGettingSpecialColumnWithGetMethod()
     {
-        $this->multipleInsertIntoDb(10, ['user' => 'Ali']);
         $this->multipleInsertIntoDb(10);
         $result = $this->queryBuilder
             ->table('bugs')
-            ->where('user', 'Ali')
-            ->field(['user'])
+            ->field(['user', 'link'])
             ->get();
         $this->assertIsArray($result);
         $this->assertCount(10, $result);
+        $this->assertObjectHasAttribute('user', $result[0]);
+        $this->assertObjectHasAttribute('link', $result[0]);
+        $objectToArray = json_decode(json_encode($result), true);
+        $this->assertEquals(['user', 'link'], array_keys($objectToArray[0]));
     }
 
     public function testItShouldThrowsExceptionWhenFieldsAreNotValid()
