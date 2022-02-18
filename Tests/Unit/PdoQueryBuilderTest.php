@@ -148,6 +148,14 @@ class PdoQueryBuilderTest extends TestCase
         $this->assertObjectHasAttribute('email', $result);
     }
 
+    public function testItReturnNullIfFirstRowNotExist()
+    {
+        $result = $this->queryBuilder
+            ->table('bugs')
+            ->first();
+        $this->assertNull($result);
+    }
+
     public function testItShouldThrowsExceptionWhenFieldsAreNotValid()
     {
         $this->expectException(FieldIsNotExistException::class);

@@ -89,7 +89,7 @@ class PdoQueryBuilder
     public function first()
     {
         $result = $this->get();
-        return $result[0];
+        return is_null($result) ? null : $result[0];
     }
 
     public function field(array $fields = [])
