@@ -36,7 +36,7 @@ class PdoQueryBuilder
         $columns = Database::createColumnsListForSqlStatement($data);
         $placeholder = Database::createPlaceholderForSqlStatement($data);
         $sql = "INSERT INTO {$this->table} ({$columns}) VALUES ({$placeholder})";
-        $stmt = $this->connection->prepare($sql);
+        $stmt = $this->prepare($sql);
         $stmt->execute(array_values($data));
         return (int)$this->connection->lastInsertId();
     }
@@ -68,7 +68,7 @@ class PdoQueryBuilder
         $setSection = Database::updateColumnsForSqlStatement($data);
         $where = Database::implodeByAnd($this->whereSqlStatementCondition);
         $sql = "UPDATE {$this->table} SET {$setSection} WHERE {$where}";
-        $stmt = $this->connection->prepare($sql);
+        $stmt = $this->prepare($sql);
         $stmt->execute(array_values($data));
         return $stmt->rowCount();
     }
@@ -86,7 +86,7 @@ class PdoQueryBuilder
 
         $where = Database::implodeByAnd($this->whereSqlStatementCondition);
         $sql = "DELETE FROM {$this->table} WHERE {$where};";
-        $stmt = $this->connection->prepare($sql);
+        $stmt = $this->prepare($sql);
         $stmt->execute();
         return $stmt->rowCount();
     }
@@ -102,7 +102,7 @@ class PdoQueryBuilder
         $orderBySection = !count($this->sortParams) ? null
             : "ORDER BY {$this->sortParams['sortBy']} {$this->sortParams['sortMethod']}";
         $sql = "SELECT {$fields} FROM {$this->table} {$where} {$orderBySection} {$pagination}";
-        $stmt = $this->connection->prepare($sql);
+        $stmt = $this->prepare($sql);
         $stmt->execute();
         $result = $stmt->fetchAll();
         return (count($result) > 0 ? $result : null);
@@ -134,7 +134,7 @@ class PdoQueryBuilder
 
     private function getAllTables()
     {
-        $query = $this->connection->prepare("SHOW TABLES");
+        $query = $this->prepare("SHOW TABLES");
         $query->execute();
         $tables = $query->fetchAll(PDO::FETCH_COLUMN);
         return $tables;
@@ -144,7 +144,7 @@ class PdoQueryBuilder
     {
         $tables = $this->getAllTables();
         foreach ($tables as $table) {
-            $query = $this->connection->prepare("TRUNCATE TABLE {$table}");
+            $query = $this->prepare("TRUNCATE TABLE {$table}");
             $query->execute();
         }
     }
@@ -156,5 +156,9 @@ class PdoQueryBuilder
     public function rollback()
     {
         $this->connection->rollback();
+    }
+    private function prepare(string $sql)
+    {
+        return $this->connection->prepare($sql);
     }
 }
