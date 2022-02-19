@@ -52,4 +52,14 @@ class Database
     {
         return in_array($column, self::ALL_COLUMNS);
     }
+
+    public static function implodeByAnd(array $argument): string
+    {
+        return implode(' AND ', $argument);
+    }
+
+    public static function implodeByComma(array $argument): string
+    {
+        return implode(',', $argument);
+    }
 }

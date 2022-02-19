@@ -66,7 +66,7 @@ class PdoQueryBuilder
             throw new whereEmptyException("Where Statement is empty!");
 
         $setSection = Database::updateColumnsForSqlStatement($data);
-        $where = implode(' AND ', $this->whereSqlStatementCondition);
+        $where = Database::implodeByAnd($this->whereSqlStatementCondition);
         $sql = "UPDATE {$this->table} SET {$setSection} WHERE {$where}";
         $stmt = $this->connection->prepare($sql);
         $stmt->execute(array_values($data));
@@ -84,7 +84,7 @@ class PdoQueryBuilder
         if (empty($this->whereSqlStatementCondition))
             throw new whereEmptyException("Where Statement is empty!");
 
-        $where = implode(' AND ', $this->whereSqlStatementCondition);
+        $where = Database::implodeByAnd($this->whereSqlStatementCondition);
         $sql = "DELETE FROM {$this->table} WHERE {$where};";
         $stmt = $this->connection->prepare($sql);
         $stmt->execute();
@@ -94,11 +94,11 @@ class PdoQueryBuilder
     public function get(): ?array
     {
         $where = !count($this->whereSqlStatementCondition) ? null
-            : " WHERE " . implode(' AND ', $this->whereSqlStatementCondition);
+            : " WHERE " . Database::implodeByAnd($this->whereSqlStatementCondition);
         $fields = !count($this->fieldsForGetMethod) ? "*"
-            : implode(',', $this->fieldsForGetMethod);
+            : Database::implodeByComma($this->fieldsForGetMethod);
         $pagination = !count($this->paginationParams) ? null
-            : " LIMIT " . implode(',', $this->paginationParams);
+            : " LIMIT " . Database::implodeByComma($this->paginationParams);
         $orderBySection = !count($this->sortParams) ? null
             : "ORDER BY {$this->sortParams['sortBy']} {$this->sortParams['sortMethod']}";
         $sql = "SELECT {$fields} FROM {$this->table} {$where} {$orderBySection} {$pagination}";
