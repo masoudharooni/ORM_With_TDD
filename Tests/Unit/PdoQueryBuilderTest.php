@@ -139,6 +139,14 @@ class PdoQueryBuilderTest extends TestCase
         $this->assertObjectHasAttribute('email', $result[0]);
     }
 
+    public function testItShouldThrowsExceptionWhenSortByArgumentIsNotCorrect()
+    {
+        $this->expectException(ColumnDatabaseNotExistException::class);
+        $this->queryBuilder
+            ->table('bugs')
+            ->sort('dummy', 'ASC');
+    }
+
     public function testItCanReturnNullWhenAreNotExistAnyData()
     {
         $result = $this->queryBuilder
