@@ -124,6 +124,21 @@ class PdoQueryBuilderTest extends TestCase
         $this->assertCount((10 + 10), $result);
     }
 
+    public function testItCanFetchDataWithSorting()
+    {
+        $this->multipleInsertIntoDb(10);
+        $result = $this->queryBuilder
+            ->table('bugs')
+            ->sort('id', 'ASC')
+            ->get();
+        $this->assertIsArray($result);
+        $this->assertCount(10, $result);
+        $this->assertObjectHasAttribute('user', $result[0]);
+        $this->assertObjectHasAttribute('name', $result[0]);
+        $this->assertObjectHasAttribute('link', $result[0]);
+        $this->assertObjectHasAttribute('email', $result[0]);
+    }
+
     public function testItCanReturnNullWhenAreNotExistAnyData()
     {
         $result = $this->queryBuilder

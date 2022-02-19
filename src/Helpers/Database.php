@@ -10,6 +10,13 @@ class Database
         'link',
         'email'
     ];
+    const ALL_COLUMNS = [
+        'id',
+        'user',
+        'name',
+        'link',
+        'email'
+    ];
     public static function createPlaceholderForSqlStatement(array $data): string
     {
         $questionSignArray = [];
@@ -39,5 +46,10 @@ class Database
     public static function isValidColumn(string $column): bool
     {
         return (in_array($column, self::VALID_COLUMNS));
+    }
+
+    public static function isExistColumn(string $column): bool
+    {
+        return in_array($column, self::ALL_COLUMNS);
     }
 }

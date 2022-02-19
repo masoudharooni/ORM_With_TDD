@@ -7,6 +7,7 @@ use App\Helpers\Database;
 use App\Exceptions\ColumnDatabaseNotExistException;
 use App\Exceptions\TableNotExistException;
 use App\Exceptions\FieldIsNotExistException;
+use App\Exceptions\sortMethodException;
 use PDO;
 
 class PdoQueryBuilder
@@ -16,6 +17,7 @@ class PdoQueryBuilder
     private $whereSqlStatementCondition = [];
     private $fieldsForGetMethod = [];
     private $paginationParams = [];
+    private $sortParams = [];
     public function __construct(DatabaseConnectionInterface $connection)
     {
         $this->connection = $connection->getConnection();
@@ -43,6 +45,17 @@ class PdoQueryBuilder
         if (!Database::isValidColumn($column))
             throw new ColumnDatabaseNotExistException("Column is not exist!");
         $this->whereSqlStatementCondition[] = "{$column} = '{$value}'";
+        return $this;
+    }
+
+    public function sort(string $sortBy, string $sortMethod = 'ASC')
+    {
+        if (!Database::isExistColumn($sortBy))
+            throw new ColumnDatabaseNotExistException("Column is not exist!");
+        if (!in_array($sortMethod, ['ASC', 'DESC', 'asc', 'desc']))
+            throw new sortMethodException("it should be asc or desc!");
+
+        $this->sortParams = ['sortBy' => $sortBy, 'sortMethod' => strtoupper($sortMethod)];
         return $this;
     }
 
@@ -79,7 +92,9 @@ class PdoQueryBuilder
             : implode(',', $this->fieldsForGetMethod);
         $pagination = !count($this->paginationParams) ? null
             : " LIMIT " . implode(',', $this->paginationParams);
-        $sql = "SELECT {$fields} FROM {$this->table} {$where} {$pagination}";
+        $orderBySection = !count($this->sortParams) ? null
+            : "ORDER BY {$this->sortParams['sortBy']} {$this->sortParams['sortMethod']}";
+        $sql = "SELECT {$fields} FROM {$this->table} {$where} {$orderBySection} {$pagination}";
         $stmt = $this->connection->prepare($sql);
         $stmt->execute();
         $result = $stmt->fetchAll();
