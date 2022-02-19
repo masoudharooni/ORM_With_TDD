@@ -9,7 +9,7 @@ use App\Helpers\Config;
 use App\Exceptions\ColumnDatabaseNotExistException;
 use App\Exceptions\TableNotExistException;
 use App\Exceptions\FieldIsNotExistException;
-use phpDocumentor\Reflection\Types\ArrayKey;
+use App\Exceptions\sortMethodException;
 
 class PdoQueryBuilderTest extends TestCase
 {
@@ -145,6 +145,14 @@ class PdoQueryBuilderTest extends TestCase
         $this->queryBuilder
             ->table('bugs')
             ->sort('dummy', 'ASC');
+    }
+
+    public function testItShouldThrowsExceptionWhenSortMethodArgumentIsNotCorrect()
+    {
+        $this->expectException(sortMethodException::class);
+        $this->queryBuilder
+            ->table('bugs')
+            ->sort('id', 'dummy');
     }
 
     public function testItCanReturnNullWhenAreNotExistAnyData()
