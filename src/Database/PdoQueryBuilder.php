@@ -81,6 +81,9 @@ class PdoQueryBuilder
 
     public function delete(): int
     {
+        if (empty($this->whereSqlStatementCondition))
+            throw new whereEmptyException("Where Statement is empty!");
+
         $where = implode(' AND ', $this->whereSqlStatementCondition);
         $sql = "DELETE FROM {$this->table} WHERE {$where};";
         $stmt = $this->connection->prepare($sql);

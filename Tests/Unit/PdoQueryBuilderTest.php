@@ -95,6 +95,24 @@ class PdoQueryBuilderTest extends TestCase
         $this->assertInstanceOf(PdoQueryBuilder::class, $result);
     }
 
+    public function testWhereMethodShouldReturnAnInstanceOfPdoQueryBUilderClass()
+    {
+        $result = $this->queryBuilder->table('bugs')->where('user', 'masoud');
+        $this->assertInstanceOf(PdoQueryBuilder::class, $result);
+    }
+
+    public function testSortMethodShouldReturnAnInstanceOfPdoQueryBUilderClass()
+    {
+        $result = $this->queryBuilder->table('bugs')->sort('id');
+        $this->assertInstanceOf(PdoQueryBuilder::class, $result);
+    }
+
+    public function testPaginationMethodShouldReturnAnInstanceOfPdoQueryBUilderClass()
+    {
+        $result = $this->queryBuilder->table('bugs')->pagination();
+        $this->assertInstanceOf(PdoQueryBuilder::class, $result);
+    }
+
     public function testTableMethodShouldThrowsExceptionWhenTableIsNotValid()
     {
         $this->expectException(TableNotExistException::class);
@@ -109,6 +127,14 @@ class PdoQueryBuilderTest extends TestCase
             ->where('user', 'Masoud Harooni')
             ->delete();
         $this->assertEquals(1, $result);
+    }
+
+    public function testDeleteRecordWithoutWhere()
+    {
+        $this->expectException(whereEmptyException::class);
+        $this->queryBuilder
+            ->table('bugs')
+            ->delete();
     }
 
     public function testItCanFetchData()
