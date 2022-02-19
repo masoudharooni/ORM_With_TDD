@@ -8,6 +8,7 @@ use App\Exceptions\ColumnDatabaseNotExistException;
 use App\Exceptions\TableNotExistException;
 use App\Exceptions\FieldIsNotExistException;
 use App\Exceptions\sortMethodException;
+use App\Exceptions\whereEmptyException;
 use PDO;
 
 class PdoQueryBuilder
@@ -61,6 +62,9 @@ class PdoQueryBuilder
 
     public function update(array $data): int
     {
+        if (empty($this->whereSqlStatementCondition))
+            throw new whereEmptyException("Where Statement is empty!");
+
         $setSection = Database::updateColumnsForSqlStatement($data);
         $where = implode(' AND ', $this->whereSqlStatementCondition);
         $sql = "UPDATE {$this->table} SET {$setSection} WHERE {$where}";

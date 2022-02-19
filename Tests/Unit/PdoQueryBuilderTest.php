@@ -10,6 +10,7 @@ use App\Exceptions\ColumnDatabaseNotExistException;
 use App\Exceptions\TableNotExistException;
 use App\Exceptions\FieldIsNotExistException;
 use App\Exceptions\sortMethodException;
+use App\Exceptions\whereEmptyException;
 
 class PdoQueryBuilderTest extends TestCase
 {
@@ -46,6 +47,15 @@ class PdoQueryBuilderTest extends TestCase
         $this->assertEquals(1, $result);
         return $this->queryBuilder;
     }
+
+    public function testItShouldTrowsExceptionWhenWhereStatementIsEmpty()
+    {
+        $this->expectException(whereEmptyException::class);
+        $this->queryBuilder
+            ->table('bugs')
+            ->update(['user' => 'Masoud Harooni After Update']);
+    }
+
 
     public function testItShouldReturnZeroWhenTheRowIsNotExist()
     {
