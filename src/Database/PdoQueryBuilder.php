@@ -19,6 +19,8 @@ class PdoQueryBuilder
     private $fieldsForGetMethod = [];
     private $paginationParams = [];
     private $sortParams = [];
+    private $values = [];
+    private $statement;
     public function __construct(DatabaseConnectionInterface $connection)
     {
         $this->connection = $connection->getConnection();
@@ -36,8 +38,8 @@ class PdoQueryBuilder
         $columns = Database::createColumnsListForSqlStatement($data);
         $placeholder = Database::createPlaceholderForSqlStatement($data);
         $sql = "INSERT INTO {$this->table} ({$columns}) VALUES ({$placeholder})";
-        $stmt = $this->prepare($sql);
-        $stmt->execute(array_values($data));
+        $this->values = array_values($data);
+        $this->execute($sql);
         return (int)$this->connection->lastInsertId();
     }
 
@@ -68,9 +70,9 @@ class PdoQueryBuilder
         $setSection = Database::updateColumnsForSqlStatement($data);
         $where = Database::implodeByAnd($this->whereSqlStatementCondition);
         $sql = "UPDATE {$this->table} SET {$setSection} WHERE {$where}";
-        $stmt = $this->prepare($sql);
-        $stmt->execute(array_values($data));
-        return $stmt->rowCount();
+        $this->values = array_values($data);
+        $this->execute($sql);
+        return $this->statement->rowCount();
     }
 
     private function isExistTable(string $table_name)
@@ -86,9 +88,8 @@ class PdoQueryBuilder
 
         $where = Database::implodeByAnd($this->whereSqlStatementCondition);
         $sql = "DELETE FROM {$this->table} WHERE {$where};";
-        $stmt = $this->prepare($sql);
-        $stmt->execute();
-        return $stmt->rowCount();
+        $stmt = $this->execute($sql);
+        return $this->statement->rowCount();
     }
 
     public function get(): ?array
@@ -102,9 +103,8 @@ class PdoQueryBuilder
         $orderBySection = !count($this->sortParams) ? null
             : "ORDER BY {$this->sortParams['sortBy']} {$this->sortParams['sortMethod']}";
         $sql = "SELECT {$fields} FROM {$this->table} {$where} {$orderBySection} {$pagination}";
-        $stmt = $this->prepare($sql);
-        $stmt->execute();
-        $result = $stmt->fetchAll();
+        $this->execute($sql);
+        $result = $this->statement->fetchAll();
         return (count($result) > 0 ? $result : null);
     }
 
@@ -134,9 +134,8 @@ class PdoQueryBuilder
 
     private function getAllTables()
     {
-        $query = $this->prepare("SHOW TABLES");
-        $query->execute();
-        $tables = $query->fetchAll(PDO::FETCH_COLUMN);
+        $this->execute("SHOW TABLES");
+        $tables = $this->statement->fetchAll(PDO::FETCH_COLUMN);
         return $tables;
     }
 
@@ -144,8 +143,7 @@ class PdoQueryBuilder
     {
         $tables = $this->getAllTables();
         foreach ($tables as $table) {
-            $query = $this->prepare("TRUNCATE TABLE {$table}");
-            $query->execute();
+            $this->execute("TRUNCATE TABLE {$table}");
         }
     }
 
@@ -157,8 +155,11 @@ class PdoQueryBuilder
     {
         $this->connection->rollback();
     }
-    private function prepare(string $sql)
+    private function execute(string $sql)
     {
-        return $this->connection->prepare($sql);
+        $this->statement =  $this->connection->prepare($sql);
+        $this->statement->execute($this->values);
+        $this->values = []; 
+        return $this;
     }
 }
