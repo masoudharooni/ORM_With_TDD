@@ -88,7 +88,7 @@ class PdoQueryBuilder
 
         $where = Database::implodeByAnd($this->whereSqlStatementCondition);
         $sql = "DELETE FROM {$this->table} WHERE {$where};";
-        $stmt = $this->execute($sql);
+        $this->execute($sql);
         return $this->statement->rowCount();
     }
 
@@ -142,9 +142,8 @@ class PdoQueryBuilder
     public function truncateAllTables()
     {
         $tables = $this->getAllTables();
-        foreach ($tables as $table) {
+        foreach ($tables as $table)
             $this->execute("TRUNCATE TABLE {$table}");
-        }
     }
 
     public function beginTransaction()
@@ -159,7 +158,7 @@ class PdoQueryBuilder
     {
         $this->statement =  $this->connection->prepare($sql);
         $this->statement->execute($this->values);
-        $this->values = []; 
+        $this->values = [];
         return $this;
     }
 }
